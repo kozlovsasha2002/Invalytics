@@ -1,0 +1,1 @@
+Invalytics is a RESTful API for comparing the profitability of various financial instruments, taking into account key rates.
