@@ -1,0 +1,9 @@
+port: "8080"
+
+db:
+  username: "postgres"
+  password: "master"
+  host: "localhost"
+  port: "5432"
+  dbname: "invalytics_db"
+  sslmode: "disable"
