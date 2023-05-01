@@ -11,6 +11,11 @@ type Authorization interface {
 }
 
 type Deposit interface {
+	Create(userId int32, deposit model.Deposit) (int32, error)
+	GetAll(userId int32) ([]model.Deposit, error)
+	GetById(userId, id int32) (model.Deposit, error)
+	Update(userId, id int32, input model.UpdateDeposit) error
+	Delete(userId, id int32) error
 }
 
 type Repository struct {
@@ -21,5 +26,6 @@ type Repository struct {
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
+		Deposit:       NewDepositPostgres(db),
 	}
 }

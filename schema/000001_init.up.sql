@@ -1,7 +1,7 @@
 CREATE TABLE deposits (
     id SERIAL PRIMARY KEY ,
     initial_amount INT NOT NULL ,
-    start_date DATE NOT NULL ,
+    start_date TEXT NOT NULL ,
     number_of_months INT NOT NULL ,
     percentage_rate REAL NOT NULL
 );
