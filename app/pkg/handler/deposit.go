@@ -19,7 +19,7 @@ func (h *Handler) createDeposit(c *gin.Context) {
 		return
 	}
 
-	id, err := h.services.Deposit.Create(userId, input)
+	id, err := h.services.Deposit.CreateDeposit(userId, input)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -41,7 +41,7 @@ func (h *Handler) getAllDeposits(c *gin.Context) {
 		return
 	}
 
-	list, err := h.services.Deposit.GetAll(userId)
+	list, err := h.services.Deposit.GetAllDeposits(userId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -65,7 +65,7 @@ func (h *Handler) getDepositById(c *gin.Context) {
 		return
 	}
 
-	deposit, err := h.services.Deposit.GetById(userId, id)
+	deposit, err := h.services.Deposit.GetDepositById(userId, id)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -93,7 +93,7 @@ func (h *Handler) updateDeposit(c *gin.Context) {
 		return
 	}
 
-	err = h.services.Deposit.Update(userId, id, input)
+	err = h.services.Deposit.UpdateDeposit(userId, id, input)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -117,7 +117,7 @@ func (h *Handler) deleteDeposit(c *gin.Context) {
 		return
 	}
 
-	err = h.services.Deposit.Delete(userId, id)
+	err = h.services.Deposit.DeleteDeposit(userId, id)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

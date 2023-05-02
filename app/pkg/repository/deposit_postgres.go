@@ -15,7 +15,7 @@ func NewDepositPostgres(db *sql.DB) *DepositPostgres {
 	return &DepositPostgres{db: db}
 }
 
-func (r *DepositPostgres) Create(userId int32, deposit model.Deposit) (int32, error) {
+func (r *DepositPostgres) CreateDeposit(userId int32, deposit model.Deposit) (int32, error) {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return 0, err
@@ -39,7 +39,7 @@ func (r *DepositPostgres) Create(userId int32, deposit model.Deposit) (int32, er
 	return id, tx.Commit()
 }
 
-func (r *DepositPostgres) GetAll(userId int32) ([]model.Deposit, error) {
+func (r *DepositPostgres) GetAllDeposits(userId int32) ([]model.Deposit, error) {
 	list := make([]model.Deposit, 0)
 	query := fmt.Sprintf("SELECT deps.id, deps.initial_amount, deps.start_date, deps.number_of_months, deps.percentage_rate FROM %s deps INNER JOIN %s userdeps ON deps.id = userdeps.deposit_id WHERE userdeps.user_id = $1",
 		depositsTable, userDepositTable)
@@ -59,7 +59,7 @@ func (r *DepositPostgres) GetAll(userId int32) ([]model.Deposit, error) {
 	return list, nil
 }
 
-func (r *DepositPostgres) GetById(userId, id int32) (model.Deposit, error) {
+func (r *DepositPostgres) GetDepositById(userId, id int32) (model.Deposit, error) {
 	var d model.Deposit
 	query := fmt.Sprintf("SELECT deps.id, deps.initial_amount, deps.start_date, deps.number_of_months, deps.percentage_rate FROM %s deps INNER JOIN %s userdeps ON deps.id = userdeps.deposit_id WHERE userdeps.user_id = $1 AND userdeps.deposit_id = $2",
 		depositsTable, userDepositTable)
@@ -72,7 +72,7 @@ func (r *DepositPostgres) GetById(userId, id int32) (model.Deposit, error) {
 	return d, nil
 }
 
-func (r *DepositPostgres) Update(userId, id int32, input model.UpdateDeposit) error {
+func (r *DepositPostgres) UpdateDeposit(userId, id int32, input model.UpdateDeposit) error {
 	setValues := make([]string, 0)
 	args := make([]interface{}, 0)
 	argId := 1
@@ -111,7 +111,7 @@ func (r *DepositPostgres) Update(userId, id int32, input model.UpdateDeposit) er
 	return err
 }
 
-func (r *DepositPostgres) Delete(userId, id int32) error {
+func (r *DepositPostgres) DeleteDeposit(userId, id int32) error {
 	query := fmt.Sprintf("DELETE FROM %s deps USING %s userdeps WHERE deps.id = userdeps.deposit_id AND userdeps.user_id = $1 AND userdeps.deposit_id = $2",
 		depositsTable, userDepositTable)
 	_, err := r.db.Exec(query, userId, id)
