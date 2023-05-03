@@ -54,7 +54,7 @@ func getUserId(c *gin.Context) (int32, error) {
 	return idInt, nil
 }
 
-func getDepositId(c *gin.Context) (int32, error) {
+func getId(c *gin.Context) (int32, error) {
 	id, err := strconv.Atoi(c.Param("id"))
 	return int32(id), err
 }

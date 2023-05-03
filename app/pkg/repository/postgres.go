@@ -9,6 +9,8 @@ const (
 	usersTable       = "users"
 	depositsTable    = "deposits"
 	userDepositTable = "users_deposits"
+	bondsTable       = "bonds"
+	userBondTable    = "users_bonds"
 )
 
 type Config struct {

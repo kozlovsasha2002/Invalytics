@@ -30,6 +30,13 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		deps.GET("/:id", h.getDepositById)
 		deps.PATCH("/:id", h.updateDeposit)
 		deps.DELETE("/:id", h.deleteDeposit)
+
+		bonds := api.Group("/bonds")
+		bonds.POST("/", h.CreateBond)
+		bonds.GET("/", h.GetAllBonds)
+		bonds.GET("/:id", h.GetBondById)
+		bonds.PATCH("/:id", h.UpdateBond)
+		bonds.DELETE("/:id", h.DeleteBond)
 	}
 
 	return router
