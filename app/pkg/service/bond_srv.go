@@ -25,7 +25,6 @@ func (s *BondService) GetBondById(userId, id int32) (model.Bond, error) {
 	return s.repo.GetBondById(userId, id)
 }
 
-// UpdateBond todo
 func (s *BondService) UpdateBond(userId, id int32, input model.UpdateBond) error {
 	if err := input.Validate(); err != nil {
 		return err
@@ -38,7 +37,6 @@ func (s *BondService) UpdateBond(userId, id int32, input model.UpdateBond) error
 	return s.repo.UpdateBond(userId, id, input)
 }
 
-// DeleteBond todo
 func (s *BondService) DeleteBond(userId, id int32) error {
 	if _, err := s.repo.GetBondById(userId, id); err != nil {
 		return err

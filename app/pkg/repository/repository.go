@@ -5,6 +5,22 @@ import (
 	"database/sql"
 )
 
+type Repository struct {
+	Authorization
+	Deposit
+	Bond
+	Share
+}
+
+func NewRepository(db *sql.DB) *Repository {
+	return &Repository{
+		Authorization: NewAuthPostgres(db),
+		Deposit:       NewDepositPostgres(db),
+		Bond:          NewBondPostgres(db),
+		Share:         NewSharePostgres(db),
+	}
+}
+
 type Authorization interface {
 	CreateUser(user model.User) (int32, error)
 	GetUser(username, password string) (model.User, error)
@@ -26,16 +42,10 @@ type Bond interface {
 	DeleteBond(userId, id int32) error
 }
 
-type Repository struct {
-	Authorization
-	Deposit
-	Bond
-}
-
-func NewRepository(db *sql.DB) *Repository {
-	return &Repository{
-		Authorization: NewAuthPostgres(db),
-		Deposit:       NewDepositPostgres(db),
-		Bond:          NewBondPostgres(db),
-	}
+type Share interface {
+	CreateShare(userId int32, share model.Share) (int32, error)
+	GetAllShares(userId int32) ([]model.Share, error)
+	GetShareById(userId, id int32) (model.Share, error)
+	UpdateShare(userId, id int32, input model.UpdateShare) error
+	DeleteShare(userId, id int32) error
 }

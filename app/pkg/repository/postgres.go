@@ -11,6 +11,8 @@ const (
 	userDepositTable = "users_deposits"
 	bondsTable       = "bonds"
 	userBondTable    = "users_bonds"
+	sharesTable      = "shares"
+	userShareTable   = "users_shares"
 )
 
 type Config struct {

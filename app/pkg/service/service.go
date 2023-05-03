@@ -5,6 +5,22 @@ import (
 	"Invalytics/app/pkg/repository"
 )
 
+type Service struct {
+	Authorization
+	Deposit
+	Bond
+	Share
+}
+
+func NewService(repo *repository.Repository) *Service {
+	return &Service{
+		Authorization: NewAuthService(repo),
+		Deposit:       NewDepositService(repo),
+		Bond:          NewBondService(repo),
+		Share:         NewShareService(repo),
+	}
+}
+
 type Authorization interface {
 	CreateUser(user model.User) (int32, error)
 	GenerateToken(username, password string) (string, error)
@@ -27,16 +43,10 @@ type Bond interface {
 	DeleteBond(userId, id int32) error
 }
 
-type Service struct {
-	Authorization
-	Deposit
-	Bond
-}
-
-func NewService(repo *repository.Repository) *Service {
-	return &Service{
-		Authorization: NewAuthService(repo),
-		Deposit:       NewDepositService(repo),
-		Bond:          NewBondService(repo),
-	}
+type Share interface {
+	CreateShare(userId int32, share model.Share) (int32, error)
+	GetAllShares(userId int32) ([]model.Share, error)
+	GetShareById(userId, id int32) (model.Share, error)
+	UpdateShare(userId, id int32, input model.UpdateShare) error
+	DeleteShare(userId, id int32) error
 }

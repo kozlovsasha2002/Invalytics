@@ -17,6 +17,15 @@ CREATE TABLE bonds (
     nominal INT2 NOT NULL
 );
 
+CREATE TABLE shares (
+    id SERIAL PRIMARY KEY ,
+    ticker TEXT NOT NULL ,
+    purchase_price FLOAT4 NOT NULL ,
+    estimated_selling_price FLOAT4 NOT NULL ,
+    expected_amount_of_dividends FLOAT4 NOT NULL,
+    amount_of_months INTEGER NOT NULL
+);
+
 CREATE TABLE users (
     id SERIAL PRIMARY KEY ,
     username VARCHAR(30) NOT NULL UNIQUE ,
@@ -39,3 +48,13 @@ CREATE TABLE users_bonds (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ,
     FOREIGN KEY (bond_id) REFERENCES bonds(id) ON DELETE CASCADE
 );
+
+CREATE TABLE users_shares (
+    id SERIAL PRIMARY KEY ,
+    user_id INTEGER NOT NULL ,
+    share_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ,
+    FOREIGN KEY (share_id) REFERENCES shares(id) ON DELETE CASCADE
+);
+
+
