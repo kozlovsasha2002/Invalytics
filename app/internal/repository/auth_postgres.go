@@ -1,7 +1,8 @@
 package repository
 
 import (
-	"Invalytics/app/pkg/model"
+	"Invalytics/app/internal/model"
+	"Invalytics/app/pkg/postgresql"
 	"database/sql"
 	"fmt"
 )
@@ -16,7 +17,7 @@ func NewAuthPostgres(db *sql.DB) *AuthPostgres {
 
 func (r *AuthPostgres) CreateUser(user model.User) (int32, error) {
 	var id int32
-	query := fmt.Sprintf("INSERT INTO %s (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id", usersTable)
+	query := fmt.Sprintf("INSERT INTO %s (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id", postgresql.UsersTable)
 
 	row := r.db.QueryRow(query, user.Username, user.Email, user.Password)
 	if err := row.Scan(&id); err != nil {
@@ -28,7 +29,7 @@ func (r *AuthPostgres) CreateUser(user model.User) (int32, error) {
 
 func (r *AuthPostgres) GetUser(username, password string) (model.User, error) {
 	var user model.User
-	query := fmt.Sprintf("SELECT * FROM %s WHERE username=$1 AND password_hash=$2", usersTable)
+	query := fmt.Sprintf("SELECT * FROM %s WHERE username=$1 AND password_hash=$2", postgresql.UsersTable)
 
 	row := r.db.QueryRow(query, username, password)
 

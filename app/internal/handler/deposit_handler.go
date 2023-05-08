@@ -1,26 +1,25 @@
 package handler
 
 import (
-	"Invalytics/app/pkg/model"
+	"Invalytics/app/internal/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func (h *Handler) CreateShare(c *gin.Context) {
+func (h *Handler) createDeposit(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	var input model.Share
-	err = c.BindJSON(&input)
-	if err != nil {
+	var input model.Deposit
+	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	id, err := h.services.Share.CreateShare(userId, input)
+	id, err := h.services.Deposit.CreateDeposit(userId, input)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -31,95 +30,100 @@ func (h *Handler) CreateShare(c *gin.Context) {
 	})
 }
 
-type allSharesResponse struct {
-	Data []model.Share `json:"data"`
+type allDepositsResponse struct {
+	Data []model.Deposit `json:"data"`
 }
 
-func (h *Handler) GetAllShares(c *gin.Context) {
+func (h *Handler) getAllDeposits(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	shares, err := h.services.GetAllShares(userId)
+	list, err := h.services.Deposit.GetAllDeposits(userId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, allSharesResponse{Data: shares})
+	c.JSON(http.StatusOK, allDepositsResponse{
+		Data: list,
+	})
 }
 
-func (h *Handler) GetShareById(c *gin.Context) {
+func (h *Handler) getDepositById(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	shareId, err := getId(c)
+	id, err := getId(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
 		return
 	}
 
-	share, err := h.services.GetShareById(userId, shareId)
+	deposit, err := h.services.Deposit.GetDepositById(userId, id)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, share)
+	c.JSON(http.StatusOK, deposit)
 }
 
-func (h *Handler) UpdateShare(c *gin.Context) {
+func (h *Handler) updateDeposit(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	shareId, err := getId(c)
+	id, err := getId(c)
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	var input model.UpdateShare
-	err = c.BindJSON(&input)
+	var input model.UpdateDeposit
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.services.Deposit.UpdateDeposit(userId, id, input)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	err = h.services.UpdateShare(userId, shareId, input)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	c.JSON(http.StatusOK, statusResponse{Status: "ok"})
+	c.JSON(http.StatusOK, statusResponse{
+		Status: "ok",
+	})
 }
 
-func (h *Handler) DeleteShare(c *gin.Context) {
+func (h *Handler) deleteDeposit(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	shareId, err := getId(c)
+	id, err := getId(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
 		return
 	}
 
-	err = h.services.DeleteShare(userId, shareId)
+	err = h.services.Deposit.DeleteDeposit(userId, id)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, statusResponse{Status: "ok"})
+	c.JSON(http.StatusOK, statusResponse{
+		Status: "ok",
+	})
 }

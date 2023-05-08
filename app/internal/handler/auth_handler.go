@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"Invalytics/app/pkg/model"
+	"Invalytics/app/internal/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

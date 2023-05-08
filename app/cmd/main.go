@@ -1,10 +1,11 @@
 package main
 
 import (
-	"Invalytics/app/pkg/handler"
-	"Invalytics/app/pkg/repository"
-	"Invalytics/app/pkg/service"
-	"Invalytics/app/server"
+	"Invalytics/app/internal/handler"
+	"Invalytics/app/internal/repository"
+	"Invalytics/app/internal/server"
+	"Invalytics/app/internal/service"
+	"Invalytics/app/pkg/postgresql"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
@@ -23,7 +24,7 @@ func main() {
 		logrus.Fatalf("error loading env variables: %s", err.Error())
 	}
 
-	db, err := repository.NewPostgresDB(repository.Config{
+	db, err := postgresql.NewPostgresDB(postgresql.Config{
 		Host:     viper.GetString("db.host"),
 		Port:     viper.GetString("db.port"),
 		Username: viper.GetString("db.username"),
@@ -46,6 +47,7 @@ func main() {
 }
 
 func initConfig() error {
+	// было /D/Aleksandr/Golang/projects/Invalytics/app/config - для докера
 	viper.AddConfigPath("app/config")
 	viper.SetConfigName("config")
 	return viper.ReadInConfig()

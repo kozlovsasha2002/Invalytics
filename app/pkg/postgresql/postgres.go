@@ -1,4 +1,4 @@
-package repository
+package postgresql
 
 import (
 	"database/sql"
@@ -6,13 +6,13 @@ import (
 )
 
 const (
-	usersTable       = "users"
-	depositsTable    = "deposits"
-	userDepositTable = "users_deposits"
-	bondsTable       = "bonds"
-	userBondTable    = "users_bonds"
-	sharesTable      = "shares"
-	userShareTable   = "users_shares"
+	UsersTable       = "users"
+	DepositsTable    = "deposits"
+	UserDepositTable = "users_deposits"
+	BondsTable       = "bonds"
+	UserBondTable    = "users_bonds"
+	SharesTable      = "shares"
+	UserShareTable   = "users_shares"
 )
 
 type Config struct {

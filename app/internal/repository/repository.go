@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"Invalytics/app/pkg/model"
+	"Invalytics/app/internal/model"
 	"database/sql"
 )
 

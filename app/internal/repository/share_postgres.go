@@ -1,7 +1,8 @@
 package repository
 
 import (
-	"Invalytics/app/pkg/model"
+	"Invalytics/app/internal/model"
+	"Invalytics/app/pkg/postgresql"
 	"database/sql"
 	"fmt"
 	"strings"
@@ -23,14 +24,14 @@ func (r *SharePostgres) CreateShare(userId int32, share model.Share) (int32, err
 
 	var id int32
 	shareQuery := fmt.Sprintf("INSERT INTO %s (ticker, purchase_price, estimated_selling_price, expected_amount_of_dividends, amount_of_months) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-		sharesTable)
+		postgresql.SharesTable)
 	row := tx.QueryRow(shareQuery, share.Ticker, share.PurchasePrice, share.EstimatedSellingPrice, share.ExpectedAmountOfDividends, share.AmountOfMonths)
 	if err := row.Scan(&id); err != nil {
 		tx.Rollback()
 		return 0, nil
 	}
 
-	userShareQuery := fmt.Sprintf("INSERT INTO %s (user_id, share_id) VALUES ($1, $2)", userShareTable)
+	userShareQuery := fmt.Sprintf("INSERT INTO %s (user_id, share_id) VALUES ($1, $2)", postgresql.UserShareTable)
 	_, err = tx.Exec(userShareQuery, userId, id)
 	if err != nil {
 		return 0, nil
@@ -41,7 +42,7 @@ func (r *SharePostgres) CreateShare(userId int32, share model.Share) (int32, err
 
 func (r *SharePostgres) GetAllShares(userId int32) ([]model.Share, error) {
 	shares := make([]model.Share, 0)
-	query := fmt.Sprintf("SELECT s.id, s.ticker, s.purchase_price, s.estimated_selling_price, s.expected_amount_of_dividends, s.amount_of_months FROM %s s INNER JOIN %s u ON s.id = u.share_id WHERE u.user_id = $1", sharesTable, userShareTable)
+	query := fmt.Sprintf("SELECT s.id, s.ticker, s.purchase_price, s.estimated_selling_price, s.expected_amount_of_dividends, s.amount_of_months FROM %s s INNER JOIN %s u ON s.id = u.share_id WHERE u.user_id = $1", postgresql.SharesTable, postgresql.UserShareTable)
 
 	rows, err := r.db.Query(query, userId)
 	if err != nil {
@@ -62,7 +63,7 @@ func (r *SharePostgres) GetAllShares(userId int32) ([]model.Share, error) {
 
 func (r *SharePostgres) GetShareById(userId, id int32) (model.Share, error) {
 	var share model.Share
-	query := fmt.Sprintf("SELECT s.id, s.ticker, s.purchase_price, s.estimated_selling_price, s.expected_amount_of_dividends, s.amount_of_months FROM %s s INNER JOIN %s u ON s.id = u.share_id WHERE u.user_id = $1 AND u.share_id = $2", sharesTable, userShareTable)
+	query := fmt.Sprintf("SELECT s.id, s.ticker, s.purchase_price, s.estimated_selling_price, s.expected_amount_of_dividends, s.amount_of_months FROM %s s INNER JOIN %s u ON s.id = u.share_id WHERE u.user_id = $1 AND u.share_id = $2", postgresql.SharesTable, postgresql.UserShareTable)
 
 	row := r.db.QueryRow(query, userId, id)
 	if err := row.Scan(&share.Id, &share.Ticker, &share.PurchasePrice, &share.EstimatedSellingPrice, &share.ExpectedAmountOfDividends, &share.AmountOfMonths); err != nil {
@@ -105,7 +106,7 @@ func (r *SharePostgres) UpdateShare(userId, id int32, input model.UpdateShare) e
 
 	setQuery := strings.Join(setValues, ", ")
 	query := fmt.Sprintf("UPDATE %s s SET %s FROM %s u WHERE s.id = u.share_id AND u.user_id = $%d AND u.share_id = $%d",
-		sharesTable, setQuery, userShareTable, argId, argId+1)
+		postgresql.SharesTable, setQuery, postgresql.UserShareTable, argId, argId+1)
 	args = append(args, userId, id)
 
 	_, err := r.db.Exec(query, args...)
@@ -113,7 +114,7 @@ func (r *SharePostgres) UpdateShare(userId, id int32, input model.UpdateShare) e
 }
 
 func (r *SharePostgres) DeleteShare(userId, id int32) error {
-	query := fmt.Sprintf("DELETE FROM %s s USING %s u WHERE s.id = u.share_id AND u.user_id = $1 AND u.share_id = $2", sharesTable, userShareTable)
+	query := fmt.Sprintf("DELETE FROM %s s USING %s u WHERE s.id = u.share_id AND u.user_id = $1 AND u.share_id = $2", postgresql.SharesTable, postgresql.UserShareTable)
 	_, err := r.db.Exec(query, userId, id)
 	return err
 }

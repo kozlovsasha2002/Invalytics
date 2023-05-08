@@ -1,8 +1,8 @@
 package service
 
 import (
-	"Invalytics/app/pkg/model"
-	"Invalytics/app/pkg/repository"
+	"Invalytics/app/internal/model"
+	"Invalytics/app/internal/repository"
 )
 
 type ShareService struct {

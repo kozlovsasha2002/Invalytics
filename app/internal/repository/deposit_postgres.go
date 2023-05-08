@@ -1,7 +1,8 @@
 package repository
 
 import (
-	"Invalytics/app/pkg/model"
+	"Invalytics/app/internal/model"
+	"Invalytics/app/pkg/postgresql"
 	"database/sql"
 	"fmt"
 	"strings"
@@ -22,14 +23,14 @@ func (r *DepositPostgres) CreateDeposit(userId int32, deposit model.Deposit) (in
 	}
 
 	var id int32
-	depositQuery := fmt.Sprintf("INSERT INTO %s (initial_amount, start_date, number_of_months, percentage_rate) VALUES ($1, $2, $3, $4) RETURNING id", depositsTable)
+	depositQuery := fmt.Sprintf("INSERT INTO %s (initial_amount, start_date, number_of_months, percentage_rate) VALUES ($1, $2, $3, $4) RETURNING id", postgresql.DepositsTable)
 	row := tx.QueryRow(depositQuery, deposit.InitialAmount, deposit.StartDate, deposit.NumberOfMonths, deposit.PercentageRate)
 	if err := row.Scan(&id); err != nil {
 		tx.Rollback()
 		return 0, err
 	}
 
-	userDepositQuery := fmt.Sprintf("INSERT INTO %s (user_id, deposit_id) VALUES ($1, $2)", userDepositTable)
+	userDepositQuery := fmt.Sprintf("INSERT INTO %s (user_id, deposit_id) VALUES ($1, $2)", postgresql.UserDepositTable)
 	_, err = tx.Exec(userDepositQuery, userId, id)
 	if err != nil {
 		tx.Rollback()
@@ -42,7 +43,7 @@ func (r *DepositPostgres) CreateDeposit(userId int32, deposit model.Deposit) (in
 func (r *DepositPostgres) GetAllDeposits(userId int32) ([]model.Deposit, error) {
 	list := make([]model.Deposit, 0)
 	query := fmt.Sprintf("SELECT deps.id, deps.initial_amount, deps.start_date, deps.number_of_months, deps.percentage_rate FROM %s deps INNER JOIN %s userdeps ON deps.id = userdeps.deposit_id WHERE userdeps.user_id = $1",
-		depositsTable, userDepositTable)
+		postgresql.DepositsTable, postgresql.UserDepositTable)
 	rows, err := r.db.Query(query, userId)
 	if err != nil {
 		return nil, err
@@ -62,7 +63,7 @@ func (r *DepositPostgres) GetAllDeposits(userId int32) ([]model.Deposit, error) 
 func (r *DepositPostgres) GetDepositById(userId, id int32) (model.Deposit, error) {
 	var d model.Deposit
 	query := fmt.Sprintf("SELECT deps.id, deps.initial_amount, deps.start_date, deps.number_of_months, deps.percentage_rate FROM %s deps INNER JOIN %s userdeps ON deps.id = userdeps.deposit_id WHERE userdeps.user_id = $1 AND userdeps.deposit_id = $2",
-		depositsTable, userDepositTable)
+		postgresql.DepositsTable, postgresql.UserDepositTable)
 
 	row := r.db.QueryRow(query, userId, id)
 	if err := row.Scan(&d.Id, &d.InitialAmount, &d.StartDate, &d.NumberOfMonths, &d.PercentageRate); err != nil {
@@ -104,7 +105,7 @@ func (r *DepositPostgres) UpdateDeposit(userId, id int32, input model.UpdateDepo
 	setQuery := strings.Join(setValues, ", ")
 
 	query := fmt.Sprintf("UPDATE %s deps SET %s FROM %s userdeps WHERE deps.id = userdeps.deposit_id AND userdeps.user_id=$%d AND userdeps.deposit_id=$%d",
-		depositsTable, setQuery, userDepositTable, argId, argId+1)
+		postgresql.DepositsTable, setQuery, postgresql.UserDepositTable, argId, argId+1)
 	args = append(args, userId, id)
 
 	_, err := r.db.Exec(query, args...)
@@ -113,7 +114,7 @@ func (r *DepositPostgres) UpdateDeposit(userId, id int32, input model.UpdateDepo
 
 func (r *DepositPostgres) DeleteDeposit(userId, id int32) error {
 	query := fmt.Sprintf("DELETE FROM %s deps USING %s userdeps WHERE deps.id = userdeps.deposit_id AND userdeps.user_id = $1 AND userdeps.deposit_id = $2",
-		depositsTable, userDepositTable)
+		postgresql.DepositsTable, postgresql.UserDepositTable)
 	_, err := r.db.Exec(query, userId, id)
 	return err
 }
