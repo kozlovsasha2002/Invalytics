@@ -71,6 +71,6 @@ type Company interface {
 	GetCompanyById(userId, compId int32) (model.Company, error)
 	UpdateCompany(userId, compId int32, input dto.UpdateCompanyDto) error
 	DeleteCompany(userId, compId int32) error
-	GetAllMultipliers(userId int32) ([]dto.MultiplierDto, error)
+	GetAllMultipliers(userId int32, param string) ([]dto.MultiplierDto, error)
 	GetMultiplierById(userId, compId int32) (dto.MultiplierDto, error)
 }

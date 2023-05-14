@@ -29,10 +29,14 @@ type UpdateCompanyDto struct {
 	MarketCapitalization *int    `json:"marketCapitalization"`
 	AnnualProfit         *int    `json:"annualProfit"`
 	Debentures           *int    `json:"debentures"`
+	Revenue              *int    `json:"revenue"`
+	TransactionCosts     *int    `json:"transactionCosts"`
+	AvailableFunds       *int    `json:"availableFunds"`
 }
 
 func (u *UpdateCompanyDto) Validate() error {
-	if u.Name == nil && u.DeptPayments == nil && u.Depreciation == nil && u.MarketCapitalization == nil && u.AnnualProfit == nil && u.Debentures == nil {
+	if u.Name == nil && u.DeptPayments == nil && u.Depreciation == nil && u.MarketCapitalization == nil && u.AnnualProfit == nil && u.Debentures == nil &&
+		u.Revenue == nil && u.TransactionCosts == nil && u.AvailableFunds == nil {
 		return errors.New("update structure has no values")
 	}
 	return nil

@@ -24,8 +24,8 @@ func (r *CompanyPostgres) CreateCompany(userId int32, comp model.Company) (int32
 	}
 
 	var id int32
-	companyQuery := fmt.Sprintf("INSERT INTO %s (name, dept_payments, depreciation, taxes, market_capitalization, annual_profit, debentures) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", postgresql.CompaniesTable)
-	row := tx.QueryRow(companyQuery, comp.Name, comp.DeptPayments, comp.Depreciation, comp.Taxes, comp.MarketCapitalization, comp.AnnualProfit, comp.Debentures)
+	companyQuery := fmt.Sprintf("INSERT INTO %s (name, dept_payments, depreciation, taxes, market_capitalization, annual_profit, debentures, revenue, transaction_costs, available_funds) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id", postgresql.CompaniesTable)
+	row := tx.QueryRow(companyQuery, comp.Name, comp.DeptPayments, comp.Depreciation, comp.Taxes, comp.MarketCapitalization, comp.AnnualProfit, comp.Debentures, comp.Revenue, comp.TransactionCosts, comp.AvailableFunds)
 	if err := row.Scan(&id); err != nil {
 		tx.Rollback()
 		return 0, err
@@ -43,7 +43,7 @@ func (r *CompanyPostgres) CreateCompany(userId int32, comp model.Company) (int32
 
 func (r *CompanyPostgres) GetAllCompanies(userId int32) ([]model.Company, error) {
 	list := make([]model.Company, 0)
-	query := fmt.Sprintf("SELECT comp.id, comp.name, comp.dept_payments, comp.depreciation, comp.taxes, comp.market_capitalization, comp.annual_profit, comp.debentures FROM %s comp INNER JOIN %s usercomp ON comp.id = usercomp.company_id WHERE usercomp.user_id = $1",
+	query := fmt.Sprintf("SELECT comp.id, comp.name, comp.dept_payments, comp.depreciation, comp.taxes, comp.market_capitalization, comp.annual_profit, comp.debentures, comp.revenue, comp.transaction_costs, comp.available_funds FROM %s comp INNER JOIN %s usercomp ON comp.id = usercomp.company_id WHERE usercomp.user_id = $1",
 		postgresql.CompaniesTable, postgresql.UserCompanyTable)
 	rows, err := r.db.Query(query, userId)
 	if err != nil {
@@ -52,7 +52,7 @@ func (r *CompanyPostgres) GetAllCompanies(userId int32) ([]model.Company, error)
 
 	for rows.Next() {
 		var c model.Company
-		err := rows.Scan(&c.Id, &c.Name, &c.DeptPayments, &c.Depreciation, &c.Taxes, &c.MarketCapitalization, &c.AnnualProfit, &c.Debentures)
+		err := rows.Scan(&c.Id, &c.Name, &c.DeptPayments, &c.Depreciation, &c.Taxes, &c.MarketCapitalization, &c.AnnualProfit, &c.Debentures, &c.Revenue, &c.TransactionCosts, &c.AvailableFunds)
 		if err != nil {
 			return nil, err
 		}
@@ -63,11 +63,11 @@ func (r *CompanyPostgres) GetAllCompanies(userId int32) ([]model.Company, error)
 
 func (r *CompanyPostgres) GetCompanyById(userId, compId int32) (model.Company, error) {
 	var c model.Company
-	query := fmt.Sprintf("SELECT comp.id, comp.name, comp.dept_payments, comp.depreciation, comp.taxes, comp.market_capitalization, comp.annual_profit, comp.debentures FROM %s comp INNER JOIN %s usercomp ON comp.id = usercomp.company_id WHERE usercomp.user_id = $1 AND usercomp.company_id = $2",
+	query := fmt.Sprintf("SELECT comp.id, comp.name, comp.dept_payments, comp.depreciation, comp.taxes, comp.market_capitalization, comp.annual_profit, comp.debentures, comp.revenue, comp.transaction_costs, comp.available_funds FROM %s comp INNER JOIN %s usercomp ON comp.id = usercomp.company_id WHERE usercomp.user_id = $1 AND usercomp.company_id = $2",
 		postgresql.CompaniesTable, postgresql.UserCompanyTable)
 
 	row := r.db.QueryRow(query, userId, compId)
-	if err := row.Scan(&c.Id, &c.Name, &c.DeptPayments, &c.Depreciation, &c.Taxes, &c.MarketCapitalization, &c.AnnualProfit, &c.Debentures); err != nil {
+	if err := row.Scan(&c.Id, &c.Name, &c.DeptPayments, &c.Depreciation, &c.Taxes, &c.MarketCapitalization, &c.AnnualProfit, &c.Debentures, &c.Revenue, &c.TransactionCosts, &c.AvailableFunds); err != nil {
 		return c, err
 	}
 
@@ -118,6 +118,24 @@ func (r *CompanyPostgres) UpdateCompany(userId, compId int32, input dto.UpdateCo
 	if input.Debentures != nil {
 		setValues = append(setValues, fmt.Sprintf("debentures=$%d", argId))
 		args = append(args, *input.Debentures)
+		argId++
+	}
+
+	if input.Revenue != nil {
+		setValues = append(setValues, fmt.Sprintf("revenue=$%d", argId))
+		args = append(args, *input.Revenue)
+		argId++
+	}
+
+	if input.TransactionCosts != nil {
+		setValues = append(setValues, fmt.Sprintf("transaction_costs=$%d", argId))
+		args = append(args, *input.TransactionCosts)
+		argId++
+	}
+
+	if input.AvailableFunds != nil {
+		setValues = append(setValues, fmt.Sprintf("available_funds=$%d", argId))
+		args = append(args, *input.AvailableFunds)
 		argId++
 	}
 

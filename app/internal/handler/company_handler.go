@@ -129,10 +129,52 @@ func (h *Handler) DeleteCompany(c *gin.Context) {
 	})
 }
 
-func (h *Handler) GetAllMultipliers(c *gin.Context) {
+type AllMultipliersResponse struct {
+	Data []dto.MultiplierDto `json:"data"`
+}
 
+func (h *Handler) GetAllMultipliers(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	param := c.Query("sortBy")
+	if param != "ebitda" && param != "pe" && param != "ev" {
+		newErrorResponse(c, http.StatusBadRequest, "invalid sortBy param")
+		return
+	}
+
+	multipliers, err := h.services.Company.GetAllMultipliers(userId, param)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, AllMultipliersResponse{
+		Data: multipliers,
+	})
 }
 
 func (h *Handler) GetMultiplierById(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
+	companyId, err := getId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
+		return
+	}
+
+	mult, err := h.services.Company.GetMultiplierById(userId, companyId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, mult)
 }

@@ -34,7 +34,10 @@ CREATE TABLE companies (
     taxes INTEGER NOT NULL ,
     market_capitalization INTEGER NOT NULL ,
     annual_profit INTEGER NOT NULL ,
-    debentures INTEGER NOT NULL
+    debentures INTEGER NOT NULL ,
+    revenue  INTEGER NOT NULL ,
+    transaction_costs INTEGER NOT NULL ,
+    available_funds INTEGER NOT NULL
 );
 
 CREATE TABLE users (
