@@ -13,6 +13,19 @@ type Bond struct {
 	Nominal          int16   `json:"nominal"`
 }
 
+func (b *Bond) ProfitabilityById(term int) (float32, error) {
+	var profit float32
+	if term < 0 {
+		return 0, errors.New("term < 0")
+	}
+	years := term / 12
+	diff := float32(b.Nominal) - b.PurchasePrice
+	sumOfCoupons := b.SizeOfCoupon * float32(b.NumberOfPayments)
+	profit = (diff + sumOfCoupons) / b.PurchasePrice * 100
+	profit /= float32(years)
+	return profit, nil
+}
+
 type UpdateBond struct {
 	Ticker           *string  `json:"ticker"`
 	AmountOfMonths   *int     `json:"amountOfMonths"`

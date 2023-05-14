@@ -1,6 +1,7 @@
 package service
 
 import (
+	"Invalytics/app/internal/dto"
 	"Invalytics/app/internal/model"
 	"Invalytics/app/internal/repository"
 )
@@ -10,6 +11,7 @@ type Service struct {
 	Deposit
 	Bond
 	Share
+	Profit
 }
 
 func NewService(repo *repository.Repository) *Service {
@@ -18,6 +20,7 @@ func NewService(repo *repository.Repository) *Service {
 		Deposit:       NewDepositService(repo),
 		Bond:          NewBondService(repo),
 		Share:         NewShareService(repo),
+		Profit:        NewProfitService(repo),
 	}
 }
 
@@ -49,4 +52,13 @@ type Share interface {
 	GetShareById(userId, id int32) (model.Share, error)
 	UpdateShare(userId, id int32, input model.UpdateShare) error
 	DeleteShare(userId, id int32) error
+}
+
+type Profit interface {
+	ShareProfitabilityById(userId, shareId int32, termInMonths int) (model.ProfitInfo, error)
+	AllShareProfitability(userId int32, termInMonths int, sort bool) ([]model.ProfitInfo, error)
+	BondProfitabilityById(userId, bondId int32) (dto.BondInfo, error)
+	AllBondProfitability(userId int32, srt bool) ([]dto.BondInfo, error)
+	DepositProfitabilityById(userId, depositId int32) (dto.DepositDto, error)
+	AllDepositProfitability(userId int32, srt bool) ([]dto.DepositDto, error)
 }

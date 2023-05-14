@@ -11,6 +11,16 @@ type Share struct {
 	AmountOfMonths            int     `json:"amountOfMonths"`
 }
 
+func (s *Share) ProfitabilityById(termInMonths int) (float32, error) {
+	if termInMonths < 0 {
+		return 0, errors.New("amount of months less 0")
+	}
+	years := float32(termInMonths) / 12
+	income := (s.EstimatedSellingPrice - s.PurchasePrice) + s.ExpectedAmountOfDividends
+	percentage := (income / s.PurchasePrice) * 100 / years
+	return percentage, nil
+}
+
 type UpdateShare struct {
 	Ticker                    *string  `json:"ticker"`
 	PurchasePrice             *float32 `json:"purchasePrice"`

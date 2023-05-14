@@ -2,7 +2,6 @@ package model
 
 import (
 	"errors"
-	"time"
 )
 
 type Deposit struct {
@@ -13,29 +12,15 @@ type Deposit struct {
 	PercentageRate float32 `json:"percentageRate"`
 }
 
-func (d *Deposit) EndDate() time.Time {
-
-	return time.Time{}
-}
-
-func (d *Deposit) FinalAmount() int {
-	// итоговая сумма после погашения депозита
-	return 0
-}
-
-func (d *Deposit) AnnualReturn() float32 {
-	// доходность в процентах годовых
-	return d.PercentageRate
-}
-
-func (d *Deposit) CapitalGain() float32 {
-	//разница между вложенной суммой и полученной
-	return 0
-}
-
-func (d *Deposit) CapitalGainInPercent() float32 {
-	// отношения полученной суммы к вложенной минус 100 %
-	return 0
+func (d *Deposit) ProfitabilityById(term int) (float32, error) {
+	var profit float32
+	if term <= 0 {
+		return 0, errors.New("term <= 0")
+	}
+	sum := float32(d.InitialAmount) * d.PercentageRate
+	years := float32(term) / float32(12)
+	profit = (sum * years) / float32(d.InitialAmount)
+	return profit, nil
 }
 
 type UpdateDeposit struct {

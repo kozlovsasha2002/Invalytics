@@ -10,6 +10,7 @@ type Repository struct {
 	Deposit
 	Bond
 	Share
+	Profit
 }
 
 func NewRepository(db *sql.DB) *Repository {
@@ -18,6 +19,7 @@ func NewRepository(db *sql.DB) *Repository {
 		Deposit:       NewDepositPostgres(db),
 		Bond:          NewBondPostgres(db),
 		Share:         NewSharePostgres(db),
+		Profit:        NewProfitPostgres(db),
 	}
 }
 
@@ -48,4 +50,13 @@ type Share interface {
 	GetShareById(userId, id int32) (model.Share, error)
 	UpdateShare(userId, id int32, input model.UpdateShare) error
 	DeleteShare(userId, id int32) error
+}
+
+type Profit interface {
+	GetShare(userId, id int32) (model.Share, error)
+	AllShares(userId int32) ([]model.Share, error)
+	GetBond(userId, id int32) (model.Bond, error)
+	AllBonds(userId int32) ([]model.Bond, error)
+	GetDeposit(userId, id int32) (model.Deposit, error)
+	AllDeposits(userId int32) ([]model.Deposit, error)
 }
