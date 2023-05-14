@@ -26,6 +26,17 @@ CREATE TABLE shares (
     amount_of_months INTEGER NOT NULL
 );
 
+CREATE TABLE companies (
+    id SERIAL PRIMARY KEY ,
+    name TEXT NOT NULL ,
+    dept_payments INTEGER NOT NULL ,
+    depreciation INTEGER NOT NULL ,
+    taxes INTEGER NOT NULL ,
+    market_capitalization INTEGER NOT NULL ,
+    annual_profit INTEGER NOT NULL ,
+    debentures INTEGER NOT NULL
+);
+
 CREATE TABLE users (
     id SERIAL PRIMARY KEY ,
     username VARCHAR(30) NOT NULL UNIQUE ,
@@ -55,6 +66,14 @@ CREATE TABLE users_shares (
     share_id INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ,
     FOREIGN KEY (share_id) REFERENCES shares(id) ON DELETE CASCADE
+);
+
+CREATE TABLE users_companies (
+    id SERIAL PRIMARY KEY ,
+    user_id INTEGER NOT NULL ,
+    company_id INTEGER NOT NULL ,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ,
+    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
 );
 
 

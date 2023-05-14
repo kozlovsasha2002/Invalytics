@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"Invalytics/app/internal/dto"
 	"Invalytics/app/internal/model"
 	"database/sql"
 )
@@ -11,6 +12,7 @@ type Repository struct {
 	Bond
 	Share
 	Profit
+	Company
 }
 
 func NewRepository(db *sql.DB) *Repository {
@@ -20,6 +22,7 @@ func NewRepository(db *sql.DB) *Repository {
 		Bond:          NewBondPostgres(db),
 		Share:         NewSharePostgres(db),
 		Profit:        NewProfitPostgres(db),
+		Company:       NewCompanyPostgres(db),
 	}
 }
 
@@ -59,4 +62,12 @@ type Profit interface {
 	AllBonds(userId int32) ([]model.Bond, error)
 	GetDeposit(userId, id int32) (model.Deposit, error)
 	AllDeposits(userId int32) ([]model.Deposit, error)
+}
+
+type Company interface {
+	CreateCompany(userId int32, comp model.Company) (int32, error)
+	GetAllCompanies(userId int32) ([]model.Company, error)
+	GetCompanyById(userId, compId int32) (model.Company, error)
+	UpdateCompany(userId, compId int32, input dto.UpdateCompanyDto) error
+	DeleteCompany(userId, compId int32) error
 }

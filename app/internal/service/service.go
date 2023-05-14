@@ -12,6 +12,7 @@ type Service struct {
 	Bond
 	Share
 	Profit
+	Company
 }
 
 func NewService(repo *repository.Repository) *Service {
@@ -21,6 +22,7 @@ func NewService(repo *repository.Repository) *Service {
 		Bond:          NewBondService(repo),
 		Share:         NewShareService(repo),
 		Profit:        NewProfitService(repo),
+		Company:       NewCompanyService(repo),
 	}
 }
 
@@ -61,4 +63,14 @@ type Profit interface {
 	AllBondProfitability(userId int32, srt bool) ([]dto.BondInfo, error)
 	DepositProfitabilityById(userId, depositId int32) (dto.DepositDto, error)
 	AllDepositProfitability(userId int32, srt bool) ([]dto.DepositDto, error)
+}
+
+type Company interface {
+	CreateCompany(userId int32, comp model.Company) (int32, error)
+	GetAllCompanies(userId int32) ([]model.Company, error)
+	GetCompanyById(userId, compId int32) (model.Company, error)
+	UpdateCompany(userId, compId int32, input dto.UpdateCompanyDto) error
+	DeleteCompany(userId, compId int32) error
+	GetAllMultipliers(userId int32) ([]dto.MultiplierDto, error)
+	GetMultiplierById(userId, compId int32) (dto.MultiplierDto, error)
 }
